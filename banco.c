@@ -116,6 +116,83 @@ void infoConta(Conta conta){
 
 void criarConta(){
 
+    Cliente cliente;
+
+    // Data de cadastro:
+    char dia[3];
+    char mes[3];
+    char ano[5];
+    char data_cadastro[20];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    // Dia:
+    if(tm.tm_mday < 10){
+        sprintf(dia, "0%d", tm.tm_mday); //ex: 01/08/2020
+    }
+
+    else{
+        sprintf(dia, "%d", tm.tm_mday);
+    }
+
+    //Mês:
+    if((tm.tm_mon + 1) < 10){
+        sprintf(mes, "0%d", tm.tm_mon + 1);
+    }
+
+    else{
+        sprintf(mes, "%d", tm.tm_mon + 1);
+    }
+
+    //Ano:
+    sprintf(ano, "%d", tm.tm_year + 1900);
+
+    strcpy(data_cadastro, "");
+
+    strcat(data_cadastro, dia);
+    strcat(data_cadastro, "/");
+    strcat(data_cadastro, mes);
+    strcat(data_cadastro, "/");
+    strcat(data_cadastro, ano);
+    strcat(data_cadastro, "\0");
+
+    strcpy(cliente.dataCadastro, data_cadastro);
+
+    // Criar cliente:
+    printf("Informe os dados do cliente: \n");
+    cliente.codigo = contador_clientes + 1;
+
+    printf("Nome do cliente: \n");
+    fgets(cliente.nome, 50, stdin);
+
+    printf("E-mail do cliente: \n");
+    fgets(cliente.email, 50, stdin);
+
+    printf("CPF do cliente: \n");
+    fgets(cliente.cpf, 20, stdin);
+
+    printf("Data de nascimento do cliente: \n");
+    fgets(cliente.dataNascimento, 20, stdin);
+
+    contador_clientes++;
+
+    // Criar a conta:
+    contas[contador_contas].numero = contador_contas +1;
+    contas[contador_contas].cliente = cliente;
+    contas[contador_contas].saldo = 0.0;
+    contas[contador_contas].limite = 0.0;
+    contas[contador_contas].saldoTotal = atualizaSaldoTotal(contas[contador_contas]);
+
+    printf("Conta criada com sucesso! \n");
+    printf("\n");
+    printf("Dados da conta criada: \n");
+    printf("\n");
+    infoConta(contas[contador_contas]);
+    contador_contas++;
+
+    Sleep(4);
+    menu();
+
 }
 
 float atualizaSaldoTotal(Conta conta){
@@ -224,16 +301,123 @@ void transferir(Conta conta_origem, Conta conta_destino, float valor){
 
 void efetuarSaque(){
 
+if(contador_contas > 0){
+    int numero;
+    printf("Informe o numero da conta: \n");
+    scanf("%d", &numero);
+
+    Conta conta = buscarContaPorNumero(numero);
+
+    if(conta.numero == numero){
+        float valor;
+        printf("Informe o valor do saque: \n");
+        scanf("%f", &valor);
+
+        sacar(conta, valor);
+    }
+
+    else{
+        printf("Nao foi encontrada uma conta com o numero %d \n", numero);
+    }
+
+}
+else{
+    printf("Ainda nao existem contas para saque. \n");
+}
+
+Sleep(2);
+menu();
+
 }
 
 void efetuarDeposito(){
+
+if(contador_contas > 0){
+    int numero;
+    printf("Informe o numero da conta: \n");
+    scanf("%d", &numero);
+
+    Conta conta = buscarContaPorNumero(numero);
+
+    if(conta.numero == numero){
+        float valor;
+        printf("Informe o valor do deposito: \n");
+        scanf("%f", &valor);
+
+        depositar(conta, valor);
+    }
+
+    else{
+        printf("Nao foi encontrada uma conta com o numero %d \n", numero);
+    }
+
+}
+else{
+    printf("Ainda nao existem contas para deposito. \n");
+}
+
+Sleep(2);
+menu();
 
 }
 
 void efetuarTransferencia(){
 
+if(contador_contas > 0){
+    int numero_o, numero_d;
+    printf("Informe o numero da sua conta: \n");
+    scanf("%d", &numero_o);
+    
+    Conta conta_o = buscarContaPorNumero(numero_o);
+
+    if(conta_o.numero == numero_o){
+        printf("Informe o numero da conta destino: \n");
+        scanf("%d", &numero_d);
+
+        Conta conta_d = buscarContaPorNumero(numero_d);
+
+        if(conta_d.numero == numero_d){
+            float valor;
+            printf("Informe o valor para transferencia: \n");
+            scanf("%f", &valor);
+
+            transferir(conta_o, conta_d, valor);
+        }
+
+        else{
+            printf("A conta destino com numero %d nao foi encontrada. \n", numero_d);
+        }
+    }
+
+    else{
+        printf("A conta com o numero %d nao foi encontrada. \n", numero_o);
+    }
+}
+
+else{
+    printf("Ainda nao existem contas para transferencia. \n");
+}
+
+Sleep(2);
+menu();
+
 }
 
 void listarContas(){
+
+if(contador_contas > 0){
+    for(int i = 0; i < contador_contas; i++){
+        infoConta(contas[i]);
+        printf("\n");
+        Sleep(1);   
+    }
+}
+
+else{
+    printf("Nao existem contas cadastradas ainda. \n");
+}
+
+Sleep(2);
+menu();
 
 }
